@@ -64,9 +64,6 @@
           "value": "postgres"
         },
         {
-          "name": "KONG_PG_HOST"
-        },
-        {
           "name": "KONG_PG_PASSWORD",
           "value": "root1234"
         },
