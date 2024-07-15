@@ -3,7 +3,6 @@ version: "3.9"
 x-kong-config: &kong-env
   KONG_DATABASE: postgres
   KONG_PG_DATABASE: postgres
-  KONG_PG_HOST: database-kong.chfa9efkfbw8.us-east-1.rds.amazonaws.com
   KONG_PG_PORT: 5432
   KONG_PG_USER: postgres
   KONG_PG_SSL: on
