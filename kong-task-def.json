@@ -1,0 +1,183 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:627420822199:task-definition/kong-task:9",
+  "containerDefinitions": [
+    {
+      "name": "kong",
+      "image": "kong:3.3.0-ubuntu",
+      "cpu": 256,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 8443,
+          "hostPort": 8443,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 8001,
+          "hostPort": 8001,
+          "protocol": "tcp"
+        },
+        {
+          "containerPort": 8444,
+          "hostPort": 8444,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "command": [
+        "sh",
+        "-c",
+        "mkdir -p /tmp/kong && kong start"
+      ],
+      "environment": [
+        {
+          "name": "KONG_PG_PORT",
+          "value": "5432"
+        },
+        {
+          "name": "KONG_ADMIN_ACCESS_LOG",
+          "value": "/dev/stdout"
+        },
+        {
+          "name": "KONG_ADMIN_ERROR_LOG",
+          "value": "/dev/stderr"
+        },
+        {
+          "name": "KONG_PG_SSL",
+          "value": "on"
+        },
+        {
+          "name": "KONG_PG_SSL_VERIFY",
+          "value": "off"
+        },
+        {
+          "name": "KONG_PROXY_ERROR_LOG",
+          "value": "/dev/stderr"
+        },
+        {
+          "name": "KONG_DATABASE",
+          "value": "postgres"
+        },
+        {
+          "name": "KONG_PG_HOST"
+        },
+        {
+          "name": "KONG_PG_PASSWORD",
+          "value": "root1234"
+        },
+        {
+          "name": "KONG_PG_DATABASE",
+          "value": "postgres"
+        },
+        {
+          "name": "KONG_PROXY_ACCESS_LOG",
+          "value": "/dev/stdout"
+        },
+        {
+          "name": "KONG_DECLARATIVE_CONFIG",
+          "value": "/opt/kong/kong.yaml"
+        },
+        {
+          "name": "KONG_PG_USER",
+          "value": "postgres"
+        },
+        {
+          "name": "KONG_PROXY_LISTEN",
+          "value": "0.0.0.0:8000"
+        },
+        {
+          "name": "KONG_ADMIN_LISTEN",
+          "value": "0.0.0.0:8001"
+        },
+        {
+          "name": "KONG_PREFIX",
+          "value": "/tmp/kong"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "config",
+          "containerPath": "/opt/kong",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/kong",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD",
+          "kong",
+          "health"
+        ],
+        "interval": 10,
+        "timeout": 10,
+        "retries": 10,
+        "startPeriod": 30
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "kong-task",
+  "taskRoleArn": "arn:aws:iam::627420822199:role/LabRole",
+  "executionRoleArn": "arn:aws:iam::627420822199:role/LabRole",
+  "networkMode": "awsvpc",
+  "revision": 9,
+  "volumes": [
+    {
+      "name": "config",
+      "host": {}
+    }
+  ],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.container-health-check"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "registeredAt": "2024-07-14T22:13:16.645Z",
+  "registeredBy": "arn:aws:sts::627420822199:assumed-role/voclabs/user2844794=LEANDRO_CAVALLARI_SILVA",
+  "tags": []
+}

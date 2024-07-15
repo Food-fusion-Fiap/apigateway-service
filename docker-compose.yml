@@ -2,9 +2,12 @@ version: "3.9"
 
 x-kong-config: &kong-env
   KONG_DATABASE: postgres
-  KONG_PG_DATABASE: kong
-  KONG_PG_HOST: db-kong
-  KONG_PG_USER: kong
+  KONG_PG_DATABASE: postgres
+  KONG_PG_HOST: database-kong.chfa9efkfbw8.us-east-1.rds.amazonaws.com
+  KONG_PG_PORT: 5432
+  KONG_PG_USER: postgres
+  KONG_PG_SSL: on
+  KONG_PG_SSL_VERIFY: off
   KONG_PG_PASSWORD_FILE: /run/secrets/kong_postgres_password
 
 volumes:
@@ -20,57 +23,47 @@ volumes:
       device: tmpfs
 
 networks:
-  fiap-store:
+  food-fusion:
     external: false
 
 services:
-  token-1:
-    build: service/
-    hostname: token-1
-    networks:
-      - fiap-store
-    ports:
-      - "3333:3333"
-
-  # estoque-2:
-  #   build: estoque/
-  #   hostname: estoque-2
-  #   depends_on:
-  #     - db-estoque
-  #   networks:
-  #     - fiap-store
-
   kong-migrations:
     image: "kong:3.3.0-ubuntu"
     command: kong migrations bootstrap
-    depends_on:
-      - db-kong
+
     environment:
       <<: *kong-env
     secrets:
       - kong_postgres_password
     networks:
-      - fiap-store
+      - food-fusion
     restart: on-failure
 
   kong-migrations-up:
     image: "kong:3.3.0-ubuntu"
     command: kong migrations up && kong migrations finish
-    depends_on:
-      - db-kong
+    # depends_on:
+    #   - db-kong
     environment:
       <<: *kong-env
     secrets:
       - kong_postgres_password
-    networks:
-      - fiap-store
+    # networks:
+    #   - food-fusion
     restart: on-failure
 
   kong:
     image: "kong:3.3.0-ubuntu"
     user: "kong"
     environment:
-      <<: *kong-env
+      KONG_DATABASE: postgres
+      KONG_PG_DATABASE: postgres
+      KONG_PG_HOST: database-kong.chfa9efkfbw8.us-east-1.rds.amazonaws.com
+      KONG_PG_PORT: 5432
+      KONG_PG_USER: postgres
+      KONG_PG_SSL: on
+      KONG_PG_SSL_VERIFY: off
+      KONG_PG_PASSWORD: root1234
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
@@ -79,10 +72,6 @@ services:
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_PREFIX: /var/run/kong
       KONG_DECLARATIVE_CONFIG: "/opt/kong/kong.yaml"
-    secrets:
-      - kong_postgres_password
-    networks:
-      - fiap-store
     ports:
       - "0.0.0.0:8000:8000/tcp"
       - "0.0.0.0:8443:8443/tcp"
@@ -119,7 +108,7 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - fiap-store
+      - food-fusion
     volumes:
       - kong_data:/var/lib/postgresql/data
 
